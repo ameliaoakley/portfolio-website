@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add to Portfolio - Art Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container logo-container--left">
+            <h1 class="title">Add to Portfolio</h1>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="board-selector">
+            <label for="board">Select Board</label>
+            <select id="board">
+                <option value="" disabled selected>Choose a board...</option>
+                <option value="my-work">My Work</option>
+                <option value="inspiration">Inspiration</option>
+                <option value="collaborations">Collaborations</option>
+            </select>
+        </div>
+
+        <div class="upload-layout">
+            <div class="upload-box">
+                <svg viewBox="0 0 24 24" width="48" height="48">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+                </svg>
+                <p>Drag and drop your artwork here</p>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+                <button class="browse-btn" onclick="document.getElementById('fileInput').click()">Browse Files</button>
+            </div>
+
+            <div class="upload-fields">
+                <div class="field-group">
+                    <label for="title">Title of Work</label>
+                    <input type="text" id="title" placeholder="Enter your artwork title">
+                </div>
+
+                <div class="field-group">
+                    <label for="tags">Tags</label>
+                    <input type="text" id="tags" placeholder="e.g., painting, abstract, digital">
+                </div>
+
+                <div class="field-group field-group--large">
+                    <label for="description">Description</label>
+                    <textarea id="description" placeholder="Describe your artwork..."></textarea>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="index.html" class="back-link">← Back</a>
+            <p>&copy; 2026 Art Portfolio. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
