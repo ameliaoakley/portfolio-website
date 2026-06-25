@@ -9,29 +9,63 @@
 <body>
     <header class="header">
         <div class="logo-container logo-container--left">
-            <a href="index.html" class="back-link">← Back</a>
             <h1 class="title">My Portfolio</h1>
         </div>
     </header>
 
     <main class="main-content">
         <div class="portfolio-layout">
-            <div class="bio-section">
-                <label for="bio">Bio</label>
-                <textarea id="bio" placeholder="Write something about yourself..."></textarea>
+            <a href="add.html" class="add-portfolio-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+                </svg>
+                Add to Portfolio
+            </a>
+
+            <div class="bio-label">
+                <label>Bio</label>
+                <span class="bio-ellipsis" id="bioEllipsis" onclick="toggleBioEdit()">•••</span>
             </div>
 
-            <a href="add.html" class="add-card">
-                <div class="add-card-icon">
-                    <svg viewBox="0 0 24 24" width="48" height="48">
-                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
-                    </svg>
+            <div class="portfolio-content">
+                <div class="bio-area" id="bioArea">
+                    <div class="bio-text" id="bioText">
+                        <span class="bio-placeholder">Write something about yourself...</span>
+                    </div>
+                    <textarea class="bio-textarea" id="bioTextarea" placeholder="Write something about yourself..." onblur="saveBio()"></textarea>
                 </div>
-                <h2 class="add-card-title">Add to Portfolio</h2>
-                <p class="add-card-desc">Upload new artwork</p>
-            </a>
+            </div>
         </div>
     </main>
+
+    <script>
+        function toggleBioEdit() {
+            var bioText = document.getElementById('bioText');
+            var bioTextarea = document.getElementById('bioTextarea');
+            bioText.style.display = 'none';
+            bioTextarea.style.display = 'block';
+            bioTextarea.focus();
+        }
+
+        function saveBio() {
+            var bioText = document.getElementById('bioText');
+            var bioTextarea = document.getElementById('bioTextarea');
+            var bioEllipsis = document.getElementById('bioEllipsis');
+            var bioPlaceholder = document.querySelector('.bio-placeholder');
+            var value = bioTextarea.value.trim();
+            if (value) {
+                bioPlaceholder.textContent = value;
+                bioPlaceholder.style.display = 'inline';
+                bioEllipsis.style.display = 'inline';
+            } else {
+                bioPlaceholder.textContent = 'Write something about yourself...';
+                bioPlaceholder.style.display = 'inline';
+                bioEllipsis.style.display = 'inline';
+            }
+            bioTextarea.style.display = 'none';
+            bioText.style.display = 'flex';
+        }
+    </script>
 
     <footer class="footer">
         <div class="footer-content">
