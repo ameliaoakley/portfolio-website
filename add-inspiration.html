@@ -3,33 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add to Portfolio - Art Portfolio</title>
+    <title>Add Entry - Inspiration - Art Portfolio</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header class="header">
         <div class="logo-container logo-container--left">
-            <h1 class="title">Add to Portfolio</h1>
+            <h1 class="title">Add Entry - Inspiration</h1>
         </div>
     </header>
 
     <main class="main-content">
-        <div class="board-selector">
-            <label for="board">Select Board</label>
-            <select id="board">
-                <option value="" disabled selected>Choose a board...</option>
-                <option value="my-work">My Work</option>
-                <option value="inspiration">Inspiration</option>
-                <option value="collaborations">Collaborations</option>
-            </select>
-        </div>
-
         <div class="upload-layout">
             <div class="upload-box">
                 <svg viewBox="0 0 24 24" width="48" height="48">
                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
                 </svg>
-                <p>Drag and drop your artwork here</p>
                 <input type="file" id="fileInput" accept="image/*" hidden>
                 <button class="browse-btn" onclick="document.getElementById('fileInput').click()">Browse Files</button>
             </div>
@@ -60,27 +49,15 @@
 
     <footer class="footer">
         <div class="footer-content">
-            <a href="index.html" class="back-link">← Back</a>
+            <a href="inspiration.html" class="back-link">← Back</a>
             <p>&copy; 2026 Art Portfolio. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Load custom boards into dropdown
-        var customBoards = JSON.parse(localStorage.getItem('customBoards') || '[]');
-        var boardSelect = document.getElementById('board');
-        for (var i = 0; i < customBoards.length; i++) {
-            var option = document.createElement('option');
-            option.value = customBoards[i].id;
-            option.textContent = customBoards[i].title;
-            boardSelect.appendChild(option);
-        }
-
         const fileInput = document.getElementById('fileInput');
         const uploadBox = document.querySelector('.upload-box');
-        const browseBtn = document.querySelector('.browse-btn');
 
-        // Handle file selection from "Browse Files" button
         fileInput.addEventListener('change', function(e) {
             const files = e.target.files;
             if (files.length > 0) {
@@ -88,7 +65,6 @@
             }
         });
 
-        // Handle drag and drop
         uploadBox.addEventListener('dragover', function(e) {
             e.preventDefault();
             uploadBox.style.borderColor = '#4ecdc4';
@@ -111,14 +87,11 @@
             }
         });
 
-        // Display single selected file, replacing the upload box
         function displaySingleFile(file) {
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    uploadBox.innerHTML = `
-                        <img src="${e.target.result}" alt="Selected artwork" class="upload-preview-image" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">
-                    `;
+                    uploadBox.innerHTML = '<img src="' + e.target.result + '" alt="Selected artwork" class="upload-preview-image" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">';
                     uploadBox.style.border = 'none';
                     uploadBox.style.background = 'rgba(255, 255, 255, 0.5)';
                     uploadBox.style.alignItems = 'center';
@@ -128,56 +101,39 @@
                 };
                 reader.readAsDataURL(file);
             } else {
-                uploadBox.innerHTML = `
-                    <svg viewBox="0 0 24 24" width="64" height="64" style="color: #5a5a6e;">
-                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/>
-                    </svg>
-                    <p style="margin-top: 1rem; color: #5a5a6e;">File selected</p>
-                `;
+                uploadBox.innerHTML = '<svg viewBox="0 0 24 24" width="64" height="64" style="color: #5a5a6e;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg><p style="margin-top: 1rem; color: #5a5a6e;">File selected</p>';
                 uploadBox.style.border = 'none';
                 uploadBox.style.background = 'rgba(255, 255, 255, 0.5)';
             }
         }
 
-        // Save entry
         function saveEntry() {
             const title = document.getElementById('title').value;
             const tags = document.getElementById('tags').value;
             const description = document.getElementById('description').value;
-            const board = document.getElementById('board').value;
 
             if (!title) {
                 alert('Please enter a title for your work.');
                 return;
             }
 
-            if (!board) {
-                alert('Please select a board.');
-                return;
-            }
-
-            // Get the selected image data
             const previewImage = document.querySelector('.upload-preview-image');
             const imageData = previewImage ? previewImage.src : null;
 
-            // Create entry object
             const entry = {
                 title: title,
                 tags: tags,
                 description: description,
-                board: board,
+                board: 'inspiration',
                 image: imageData,
                 date: new Date().toISOString()
             };
 
-            // Get existing entries from localStorage
             let entries = JSON.parse(localStorage.getItem('portfolioEntries') || '[]');
             entries.push(entry);
             localStorage.setItem('portfolioEntries', JSON.stringify(entries));
 
-            // Show success message and redirect
-            alert('Entry saved successfully!');
-            window.location.href = 'my-portfolio.html';
+            window.location.href = 'inspiration.html';
         }
     </script>
 </body>

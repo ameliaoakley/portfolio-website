@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborations - Art Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container logo-container--left">
+            <h1 class="title">Collaborations</h1>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div style="text-align: center;">
+            <a href="add-collaborations.html" class="add-portfolio-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+                </svg>
+                Add Entry
+            </a>
+        </div>
+
+        <div class="waterfall-gallery" id="waterfallGallery"></div>
+    </main>
+
+    <script>
+        // Load entries for this board
+        var entries = JSON.parse(localStorage.getItem('portfolioEntries') || '[]');
+        var gallery = document.getElementById('waterfallGallery');
+        gallery.innerHTML = '';
+
+        var filteredEntries = [];
+        for (var i = 0; i < entries.length; i++) {
+            if (entries[i].board === 'collaborations') {
+                filteredEntries.push(entries[i]);
+            }
+        }
+
+        if (filteredEntries.length === 0) {
+            gallery.innerHTML = '';
+        } else {
+            for (var i = 0; i < filteredEntries.length; i++) {
+                var entry = filteredEntries[i];
+                var card = document.createElement('div');
+                card.className = 'waterfall-card';
+
+                if (entry.image) {
+                    card.innerHTML = '<img src="' + entry.image + '" alt="' + entry.title + '" class="waterfall-image">';
+                }
+
+                gallery.appendChild(card);
+            }
+        }
+    </script>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="my-portfolio.html" class="back-link">← Back</a>
+            <p>&copy; 2026 Art Portfolio. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

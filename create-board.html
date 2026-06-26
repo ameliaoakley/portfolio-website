@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Board - Art Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container logo-container--left">
+            <h1 class="title">Create New Board</h1>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="upload-layout">
+            <div class="upload-box">
+                <svg viewBox="0 0 24 24" width="48" height="48">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+                </svg>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+                <button class="browse-btn" onclick="document.getElementById('fileInput').click()">Browse Files</button>
+            </div>
+
+            <div class="upload-fields">
+                <div class="field-group">
+                    <label for="boardTitle">Board Title</label>
+                    <input type="text" id="boardTitle" placeholder="Enter board title">
+                </div>
+
+                <div class="field-group">
+                    <label for="tags">Tags</label>
+                    <input type="text" id="tags" placeholder="e.g., art, design, photography">
+                </div>
+            </div>
+        </div>
+
+        <div class="save-btn-container">
+            <button class="save-btn" onclick="createBoard()">Create Board</button>
+        </div>
+            
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="my-portfolio.html" class="back-link">← Back</a>
+            <p>&copy; 2026 Art Portfolio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        var fileInput = document.getElementById('fileInput');
+        var uploadBox = document.querySelector('.upload-box');
+
+        fileInput.addEventListener('change', function(e) {
+            var files = e.target.files;
+            if (files.length > 0) {
+                displaySingleFile(files[0]);
+            }
+        });
+
+        uploadBox.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadBox.style.borderColor = '#4ecdc4';
+            uploadBox.style.background = 'rgba(78, 205, 196, 0.1)';
+        });
+
+        uploadBox.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadBox.style.borderColor = '';
+            uploadBox.style.background = '';
+        });
+
+        uploadBox.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadBox.style.borderColor = '';
+            uploadBox.style.background = '';
+            var files = e.dataTransfer.files;
+            if (files.length > 0) {
+                displaySingleFile(files[0]);
+            }
+        });
+
+        function displaySingleFile(file) {
+            if (file.type.startsWith('image/')) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadBox.innerHTML = '<img src="' + e.target.result + '" alt="Selected thumbnail" class="upload-preview-image" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">';
+                    uploadBox.style.border = 'none';
+                    uploadBox.style.background = 'rgba(255, 255, 255, 0.5)';
+                    uploadBox.style.alignItems = 'center';
+                    uploadBox.style.justifyContent = 'center';
+                    uploadBox.style.overflow = 'hidden';
+                    uploadBox.style.minHeight = '300px';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function createBoard() {
+            var title = document.getElementById('boardTitle').value.trim();
+            var tags = document.getElementById('tags').value.trim();
+
+            if (!title) {
+                alert('Please enter a board title.');
+                return;
+            }
+
+            var previewImage = document.querySelector('.upload-preview-image');
+            var imageData = previewImage ? previewImage.src : null;
+
+            var boardId = 'custom-' + Date.now();
+
+            var board = {
+                id: boardId,
+                title: title,
+                tags: tags,
+                thumbnail: imageData
+            };
+
+            var boards = JSON.parse(localStorage.getItem('customBoards') || '[]');
+            boards.push(board);
+            localStorage.setItem('customBoards', JSON.stringify(boards));
+
+            window.location.href = 'my-portfolio.html';
+        }
+    </script>
+</body>
+</html>

@@ -22,6 +22,13 @@
                 Add to Portfolio
             </a>
 
+            <a href="create-board.html" class="add-portfolio-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+                </svg>
+                Create New Board
+            </a>
+
             <div class="bio-label">
                 <label>Bio</label>
                 <span class="bio-ellipsis" id="bioEllipsis" onclick="toggleBioEdit()">•••</span>
@@ -34,7 +41,24 @@
                     </div>
                     <textarea class="bio-textarea" id="bioTextarea" placeholder="Write something about yourself..." onblur="saveBio()"></textarea>
                 </div>
+
+                <div class="boards-sidebar">
+                    <a href="my-work.html" class="board-card">
+                        <h3 class="board-card-title">My Work</h3>
+                        <p class="board-card-count" id="myWorkCount">0 entries</p>
+                    </a>
+                    <a href="inspiration.html" class="board-card">
+                        <h3 class="board-card-title">Inspiration</h3>
+                        <p class="board-card-count" id="inspirationCount">0 entries</p>
+                    </a>
+                    <a href="collaborations.html" class="board-card">
+                        <h3 class="board-card-title">Collaborations</h3>
+                        <p class="board-card-count" id="collaborationsCount">0 entries</p>
+                    </a>
+                </div>
             </div>
+
+            <div class="waterfall-gallery" id="waterfallGallery"></div>
         </div>
     </main>
 
@@ -57,6 +81,7 @@
                 bioPlaceholder.textContent = value;
                 bioPlaceholder.style.display = 'inline';
                 bioEllipsis.style.display = 'inline';
+                localStorage.setItem('portfolioBio', value);
             } else {
                 bioPlaceholder.textContent = 'Write something about yourself...';
                 bioPlaceholder.style.display = 'inline';
@@ -65,6 +90,69 @@
             bioTextarea.style.display = 'none';
             bioText.style.display = 'flex';
         }
+
+        function loadBio() {
+            var savedBio = localStorage.getItem('portfolioBio');
+            if (savedBio) {
+                var bioPlaceholder = document.querySelector('.bio-placeholder');
+                bioPlaceholder.textContent = savedBio;
+            }
+        }
+
+        function loadEntries() {
+            var entries = JSON.parse(localStorage.getItem('portfolioEntries') || '[]');
+            var gallery = document.getElementById('waterfallGallery');
+            gallery.innerHTML = '';
+
+            // Count entries per board
+            var counts = {'my-work': 0, 'inspiration': 0, 'collaborations': 0};
+
+            for (var i = 0; i < entries.length; i++) {
+                var entry = entries[i];
+                var card = document.createElement('div');
+                card.className = 'waterfall-card';
+
+                if (entry.image) {
+                    card.innerHTML = '<img src="' + entry.image + '" alt="' + entry.title + '" class="waterfall-image">';
+                }
+
+                gallery.appendChild(card);
+
+                // Count by board
+                if (counts.hasOwnProperty(entry.board)) {
+                    counts[entry.board]++;
+                } else {
+                    counts[entry.board] = (counts[entry.board] || 0) + 1;
+                }
+            }
+
+            // Update board counts
+            document.getElementById('myWorkCount').textContent = counts['my-work'] + ' entries';
+            document.getElementById('inspirationCount').textContent = counts['inspiration'] + ' entries';
+            document.getElementById('collaborationsCount').textContent = counts['collaborations'] + ' entries';
+
+            // Load custom boards
+            loadCustomBoards(counts);
+        }
+
+        function loadCustomBoards(counts) {
+            var boards = JSON.parse(localStorage.getItem('customBoards') || '[]');
+            var sidebar = document.querySelector('.boards-sidebar');
+
+            for (var i = 0; i < boards.length; i++) {
+                var board = boards[i];
+                var count = counts[board.id] || 0;
+                var card = document.createElement('a');
+                card.href = 'board.html?id=' + board.id;
+                card.className = 'board-card';
+                card.innerHTML = '<h3 class="board-card-title">' + board.title + '</h3>' +
+                                 '<p class="board-card-count">' + count + ' entries</p>';
+                sidebar.appendChild(card);
+            }
+        }
+
+        loadBio();
+        loadEntries();
     </script>
 
     <footer class="footer">
