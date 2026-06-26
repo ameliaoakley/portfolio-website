@@ -70,6 +70,9 @@
                 var entry = filteredEntries[i];
                 var card = document.createElement('div');
                 card.className = 'waterfall-card';
+                card.onclick = (function(idx) {
+                    return function() { window.location.href = 'entry.html?index=' + idx + '&from=custom'; };
+                })(i);
 
                 if (entry.image) {
                     card.innerHTML = '<img src="' + entry.image + '" alt="' + entry.title + '" class="waterfall-image">';

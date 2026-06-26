@@ -11,6 +11,7 @@
         <div class="logo-container logo-container--left">
             <h1 class="title">My Portfolio</h1>
         </div>
+        <div class="title-dots"><span></span><span></span><span></span><span></span><span></span></div>
     </header>
 
     <main class="main-content">
@@ -29,32 +30,21 @@
                 Create New Board
             </a>
 
-            <div class="bio-label">
-                <label>Bio</label>
-                <span class="bio-ellipsis" id="bioEllipsis" onclick="toggleBioEdit()">•••</span>
-            </div>
-
             <div class="portfolio-content">
+                <div class="boards-columns">
+                    <div class="boards-sidebar" id="boardsColumn1"></div>
+                    <div class="boards-sidebar" id="boardsColumn2"></div>
+                </div>
+
                 <div class="bio-area" id="bioArea">
+                    <div class="bio-label">
+                        <label>Bio</label>
+                        <span class="bio-ellipsis" id="bioEllipsis" onclick="toggleBioEdit()">•••</span>
+                    </div>
                     <div class="bio-text" id="bioText">
                         <span class="bio-placeholder">Write something about yourself...</span>
                     </div>
                     <textarea class="bio-textarea" id="bioTextarea" placeholder="Write something about yourself..." onblur="saveBio()"></textarea>
-                </div>
-
-                <div class="boards-sidebar">
-                    <a href="my-work.html" class="board-card">
-                        <h3 class="board-card-title">My Work</h3>
-                        <p class="board-card-count" id="myWorkCount">0 entries</p>
-                    </a>
-                    <a href="inspiration.html" class="board-card">
-                        <h3 class="board-card-title">Inspiration</h3>
-                        <p class="board-card-count" id="inspirationCount">0 entries</p>
-                    </a>
-                    <a href="collaborations.html" class="board-card">
-                        <h3 class="board-card-title">Collaborations</h3>
-                        <p class="board-card-count" id="collaborationsCount">0 entries</p>
-                    </a>
                 </div>
             </div>
 
@@ -105,12 +95,15 @@
             gallery.innerHTML = '';
 
             // Count entries per board
-            var counts = {'my-work': 0, 'inspiration': 0, 'collaborations': 0};
+            var counts = {};
 
             for (var i = 0; i < entries.length; i++) {
                 var entry = entries[i];
                 var card = document.createElement('div');
                 card.className = 'waterfall-card';
+                card.onclick = (function(idx) {
+                    return function() { window.location.href = 'entry.html?index=' + idx + '&from=portfolio'; };
+                })(i);
 
                 if (entry.image) {
                     card.innerHTML = '<img src="' + entry.image + '" alt="' + entry.title + '" class="waterfall-image">';
@@ -118,18 +111,8 @@
 
                 gallery.appendChild(card);
 
-                // Count by board
-                if (counts.hasOwnProperty(entry.board)) {
-                    counts[entry.board]++;
-                } else {
-                    counts[entry.board] = (counts[entry.board] || 0) + 1;
-                }
+                counts[entry.board] = (counts[entry.board] || 0) + 1;
             }
-
-            // Update board counts
-            document.getElementById('myWorkCount').textContent = counts['my-work'] + ' entries';
-            document.getElementById('inspirationCount').textContent = counts['inspiration'] + ' entries';
-            document.getElementById('collaborationsCount').textContent = counts['collaborations'] + ' entries';
 
             // Load custom boards
             loadCustomBoards(counts);
@@ -137,7 +120,10 @@
 
         function loadCustomBoards(counts) {
             var boards = JSON.parse(localStorage.getItem('customBoards') || '[]');
-            var sidebar = document.querySelector('.boards-sidebar');
+            var col1 = document.getElementById('boardsColumn1');
+            var col2 = document.getElementById('boardsColumn2');
+
+            var col1Count = 0;
 
             for (var i = 0; i < boards.length; i++) {
                 var board = boards[i];
@@ -147,10 +133,43 @@
                 card.className = 'board-card';
                 card.innerHTML = '<h3 class="board-card-title">' + board.title + '</h3>' +
                                  '<p class="board-card-count">' + count + ' entries</p>';
-                sidebar.appendChild(card);
+
+                if (col1Count < 4) {
+                    col1.appendChild(card);
+                    col1Count++;
+                } else {
+                    col2.appendChild(card);
+                }
+            }
+
+            // Hide column 2 if empty
+            if (col2.children.length === 0) {
+                col2.style.display = 'none';
             }
         }
 
+        function ensureDefaultBoard() {
+            var boards = JSON.parse(localStorage.getItem('customBoards') || '[]');
+            var hasPortfolio = false;
+            for (var i = 0; i < boards.length; i++) {
+                if (boards[i].id === 'portfolio') {
+                    hasPortfolio = true;
+                    break;
+                }
+            }
+            if (!hasPortfolio) {
+                var defaultBoard = {
+                    id: 'portfolio',
+                    title: 'Portfolio',
+                    tags: '',
+                    thumbnail: null
+                };
+                boards.unshift(defaultBoard);
+                localStorage.setItem('customBoards', JSON.stringify(boards));
+            }
+        }
+
+        ensureDefaultBoard();
         loadBio();
         loadEntries();
     </script>

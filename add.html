@@ -11,6 +11,7 @@
         <div class="logo-container logo-container--left">
             <h1 class="title">Add to Portfolio</h1>
         </div>
+        <div class="title-dots"><span></span><span></span><span></span><span></span><span></span></div>
     </header>
 
     <main class="main-content">
@@ -18,9 +19,6 @@
             <label for="board">Select Board</label>
             <select id="board">
                 <option value="" disabled selected>Choose a board...</option>
-                <option value="my-work">My Work</option>
-                <option value="inspiration">Inspiration</option>
-                <option value="collaborations">Collaborations</option>
             </select>
         </div>
 
@@ -60,20 +58,27 @@
 
     <footer class="footer">
         <div class="footer-content">
-            <a href="index.html" class="back-link">← Back</a>
+            <a href="my-portfolio.html" class="back-link">← Back</a>
             <p>&copy; 2026 Art Portfolio. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Load custom boards into dropdown
+        // Load custom boards into dropdown, default to "Portfolio"
         var customBoards = JSON.parse(localStorage.getItem('customBoards') || '[]');
         var boardSelect = document.getElementById('board');
         for (var i = 0; i < customBoards.length; i++) {
             var option = document.createElement('option');
             option.value = customBoards[i].id;
             option.textContent = customBoards[i].title;
+            if (customBoards[i].id === 'portfolio') {
+                option.selected = true;
+            }
             boardSelect.appendChild(option);
+        }
+        if (!boardSelect.querySelector('option[selected]')) {
+            var firstOpt = boardSelect.querySelector('option');
+            if (firstOpt) firstOpt.selected = true;
         }
 
         const fileInput = document.getElementById('fileInput');

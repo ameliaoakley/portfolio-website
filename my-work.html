@@ -11,6 +11,7 @@
         <div class="logo-container logo-container--left">
             <h1 class="title">My Work</h1>
         </div>
+        <div class="title-dots"><span></span><span></span><span></span><span></span><span></span></div>
     </header>
 
     <main class="main-content">
@@ -46,6 +47,9 @@
                 var entry = filteredEntries[i];
                 var card = document.createElement('div');
                 card.className = 'waterfall-card';
+                card.onclick = (function(idx) {
+                    return function() { window.location.href = 'entry.html?index=' + idx + '&from=my-work'; };
+                })(i);
 
                 if (entry.image) {
                     card.innerHTML = '<img src="' + entry.image + '" alt="' + entry.title + '" class="waterfall-image">';

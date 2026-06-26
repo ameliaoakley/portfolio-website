@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entry - Art Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container logo-container--left">
+            <h1 class="title" id="entryTitle">Entry</h1>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="entry-detail" id="entryDetail">
+            <div class="entry-image-container" id="entryImageContainer"></div>
+            <div class="entry-info">
+                <div class="entry-field">
+                    <label class="entry-field-label">Tags</label>
+                    <p class="entry-field-value" id="entryTags"></p>
+                </div>
+                <div class="entry-field">
+                    <label class="entry-field-label">Description</label>
+                    <p class="entry-field-value" id="entryDescription"></p>
+                </div>
+                <div class="entry-field">
+                    <label class="entry-field-label">Board</label>
+                    <p class="entry-field-value" id="entryBoard"></p>
+                </div>
+                <div class="entry-field">
+                    <label class="entry-field-label">Date</label>
+                    <p class="entry-field-value" id="entryDate"></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-content" onclick="event.stopPropagation();">
+            <img src="" alt="Full size" id="lightboxImage">
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="#" id="backLink" class="back-link">← Back</a>
+            <p>&copy; 2026 Art Portfolio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        var params = new URLSearchParams(window.location.search);
+        var entryIndex = parseInt(params.get('index'));
+        var fromBoard = params.get('from');
+
+        var entries = JSON.parse(localStorage.getItem('portfolioEntries') || '[]');
+        var entry = entries[entryIndex];
+
+        if (!entry) {
+            document.getElementById('entryDetail').innerHTML = '<p>Entry not found.</p>';
+        } else {
+            document.getElementById('entryTitle').textContent = entry.title;
+            document.title = entry.title + ' - Art Portfolio';
+
+            var imageContainer = document.getElementById('entryImageContainer');
+            if (entry.image) {
+                imageContainer.innerHTML = '<img src="' + entry.image + '" alt="' + entry.title + '" class="entry-image" onclick="openLightbox(\'' + entry.image + '\')">';
+                imageContainer.style.cursor = 'pointer';
+            } else {
+                imageContainer.style.display = 'none';
+            }
+
+            document.getElementById('entryTags').textContent = entry.tags || '';
+            document.getElementById('entryDescription').textContent = entry.description || '';
+
+            // Resolve board name
+            var boardNames = {
+                'my-work': 'My Work',
+                'inspiration': 'Inspiration',
+                'collaborations': 'Collaborations'
+            };
+            var boardName = boardNames[entry.board];
+            if (!boardName) {
+                var customBoards = JSON.parse(localStorage.getItem('customBoards') || '[]');
+                for (var i = 0; i < customBoards.length; i++) {
+                    if (customBoards[i].id === entry.board) {
+                        boardName = customBoards[i].title;
+                        break;
+                    }
+                }
+                if (!boardName) boardName = entry.board;
+            }
+            document.getElementById('entryBoard').textContent = boardName;
+
+            if (entry.date) {
+                var d = new Date(entry.date);
+                document.getElementById('entryDate').textContent = d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+            }
+
+            // Set back link
+            var backLink = document.getElementById('backLink');
+            if (fromBoard === 'portfolio') {
+                backLink.href = 'my-portfolio.html';
+            } else if (fromBoard === 'custom') {
+                backLink.href = 'board.html?id=' + entry.board;
+            } else {
+                backLink.href = fromBoard + '.html';
+            }
+        }
+
+        function openLightbox(src) {
+            var lightbox = document.getElementById('lightbox');
+            var lightboxImage = document.getElementById('lightboxImage');
+            lightboxImage.src = src;
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            var lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
+</body>
+</html>
