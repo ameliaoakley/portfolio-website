@@ -12,6 +12,19 @@
             <h1 class="title">My Portfolio</h1>
         </div>
         <div class="title-dots"><span></span><span></span><span></span><span></span><span></span></div>
+        
+        <div class="profile-section">
+            <div class="profile-pic-container" onclick="document.getElementById('profilePicInput').click()">
+                <img src="" alt="Profile" class="profile-pic" id="profilePic">
+                <div class="profile-pic-placeholder" id="profilePicPlaceholder">+</div>
+            </div>
+            <input type="file" id="profilePicInput" accept="image/*" hidden>
+            
+            <div class="profile-name-area">
+                <span class="profile-name" id="profileName" onclick="toggleNameEdit()">Your Name</span>
+            </div>
+            <input type="text" class="profile-name-input" id="profileNameInput" placeholder="Enter your name" onblur="saveName()" onkeypress="if(event.key==='Enter') saveName()">
+        </div>
     </header>
 
     <main class="main-content">
@@ -169,7 +182,82 @@
             }
         }
 
+        // Profile picture handling
+        var profilePicInput = document.getElementById('profilePicInput');
+        profilePicInput.addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(ev) {
+                    var img = new Image();
+                    img.onload = function() {
+                        var canvas = document.createElement('canvas');
+                        var size = 150;
+                        var w = img.width;
+                        var h = img.height;
+                        var minDim = Math.min(w, h);
+                        var sx = (w - minDim) / 2;
+                        var sy = (h - minDim) / 2;
+                        canvas.width = size;
+                        canvas.height = size;
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+                        var dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        localStorage.setItem('profilePic', dataUrl);
+                        document.getElementById('profilePic').src = dataUrl;
+                        document.getElementById('profilePic').style.display = 'block';
+                        document.getElementById('profilePicPlaceholder').style.display = 'none';
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function loadProfilePic() {
+            var savedPic = localStorage.getItem('profilePic');
+            if (savedPic) {
+                document.getElementById('profilePic').src = savedPic;
+                document.getElementById('profilePic').style.display = 'block';
+                document.getElementById('profilePicPlaceholder').style.display = 'none';
+            }
+        }
+
+        // Name editing
+        function toggleNameEdit() {
+            var nameDisplay = document.getElementById('profileName');
+            var nameInput = document.getElementById('profileNameInput');
+            nameDisplay.style.display = 'none';
+            nameInput.style.display = 'inline';
+            nameInput.value = nameDisplay.textContent === 'Your Name' ? '' : nameDisplay.textContent;
+            nameInput.focus();
+        }
+
+        function saveName() {
+            var nameDisplay = document.getElementById('profileName');
+            var nameInput = document.getElementById('profileNameInput');
+            var value = nameInput.value.trim();
+            if (value) {
+                nameDisplay.textContent = value;
+                localStorage.setItem('profileName', value);
+            } else {
+                nameDisplay.textContent = 'Your Name';
+                localStorage.removeItem('profileName');
+            }
+            nameInput.style.display = 'none';
+            nameDisplay.style.display = 'inline';
+        }
+
+        function loadProfileName() {
+            var savedName = localStorage.getItem('profileName');
+            if (savedName) {
+                document.getElementById('profileName').textContent = savedName;
+            }
+        }
+
         ensureDefaultBoard();
+        loadProfilePic();
+        loadProfileName();
         loadBio();
         loadEntries();
     </script>

@@ -83,19 +83,42 @@
             }
         });
 
+        // Resize and compress image to fit in localStorage
+        function compressImage(file, callback) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var maxW = 400;
+                    var maxH = 400;
+                    var w = img.width;
+                    var h = img.height;
+                    if (w > maxW) { h = h * (maxW / w); w = maxW; }
+                    if (h > maxH) { w = w * (maxH / h); h = maxH; }
+                    canvas.width = w;
+                    canvas.height = h;
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    var dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    callback(dataUrl);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         function displaySingleFile(file) {
             if (file.type.startsWith('image/')) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadBox.innerHTML = '<img src="' + e.target.result + '" alt="Selected thumbnail" class="upload-preview-image" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">';
+                compressImage(file, function(dataUrl) {
+                    uploadBox.innerHTML = '<img src="' + dataUrl + '" alt="Selected thumbnail" class="upload-preview-image" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">';
                     uploadBox.style.border = 'none';
                     uploadBox.style.background = 'rgba(255, 255, 255, 0.5)';
                     uploadBox.style.alignItems = 'center';
                     uploadBox.style.justifyContent = 'center';
                     uploadBox.style.overflow = 'hidden';
                     uploadBox.style.minHeight = '300px';
-                };
-                reader.readAsDataURL(file);
+                });
             }
         }
 

@@ -116,13 +116,37 @@
             }
         });
 
+        // Resize and compress image to fit in localStorage
+        function compressImage(file, callback) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var maxW = 800;
+                    var maxH = 800;
+                    var w = img.width;
+                    var h = img.height;
+                    if (w > maxW) { h = h * (maxW / w); w = maxW; }
+                    if (h > maxH) { w = w * (maxH / h); h = maxH; }
+                    canvas.width = w;
+                    canvas.height = h;
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    var dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    callback(dataUrl);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         // Display single selected file, replacing the upload box
         function displaySingleFile(file) {
             if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
+                compressImage(file, function(dataUrl) {
                     uploadBox.innerHTML = `
-                        <img src="${e.target.result}" alt="Selected artwork" class="upload-preview-image" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">
+                        <img src="${dataUrl}" alt="Selected artwork" class="upload-preview-image" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">
                     `;
                     uploadBox.style.border = 'none';
                     uploadBox.style.background = 'rgba(255, 255, 255, 0.5)';
@@ -130,8 +154,7 @@
                     uploadBox.style.justifyContent = 'center';
                     uploadBox.style.overflow = 'hidden';
                     uploadBox.style.minHeight = '300px';
-                };
-                reader.readAsDataURL(file);
+                });
             } else {
                 uploadBox.innerHTML = `
                     <svg viewBox="0 0 24 24" width="64" height="64" style="color: #5a5a6e;">
